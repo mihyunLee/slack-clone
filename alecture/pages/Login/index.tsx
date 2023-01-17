@@ -7,7 +7,7 @@ import fetcher from '@utils/fetcher';
 import { Form, Error, Label, Input, LinkContainer, Button, Header } from '@pages/SignUp/styles';
 
 const LogIn = () => {
-  const { data, error, mutate } = useSWR('/api/users', fetcher, {
+  const { data, error, mutate } = useSWR('http://localhost:3095/api/users', fetcher, {
     dedupingInterval: 100000,
   });
 
@@ -21,8 +21,8 @@ const LogIn = () => {
       setLogInError(false);
       axios
         .post('http://localhost:3095/api/users/login', { email, password }, { withCredentials: true })
-        .then(() => {
-          mutate();
+        .then((response) => {
+          mutate(response.data, false);
         })
         .catch((error) => {
           setLogInError(error.response?.data?.statusCode === 401);
@@ -31,13 +31,9 @@ const LogIn = () => {
     [email, password, mutate],
   );
 
-  // if (data === undefined) {
-  //   return <div>로딩중...</div>;
-  // }
-
-  // if (data) {
-  //   return <Navigate to="/workspace/channel" />;
-  // }
+  if (data) {
+    return <Navigate to="/workspace/channel" />;
+  }
 
   // console.log(error, userData);
   // if (!error && userData) {
