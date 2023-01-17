@@ -1,19 +1,24 @@
 import React, { useCallback, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import useInput from '@hooks/useInput';
 import axios from 'axios';
+import useSWR from 'swr';
+import useInput from '@hooks/useInput';
+import fetcher from '@utils/fetcher';
 import { Form, Error, Label, Input, LinkContainer, Button, Header } from '@pages/SignUp/styles';
 
 const LogIn = () => {
+  const { data, error } = useSWR('/api/users', fetcher);
+
   const [logInError, setLogInError] = useState(false);
   const [email, onChangeEmail] = useInput('');
   const [password, onChangePassword] = useInput('');
+
   const onSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
       setLogInError(false);
       axios
-        .post('/api/users/login', { email, password })
+        .post('http://localhost:3095/api/users/login', { email, password }, { withCredentials: true })
         .then(() => {})
         .catch((error) => {
           setLogInError(error.response?.data?.statusCode === 401);
