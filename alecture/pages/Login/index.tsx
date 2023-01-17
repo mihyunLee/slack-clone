@@ -7,7 +7,9 @@ import fetcher from '@utils/fetcher';
 import { Form, Error, Label, Input, LinkContainer, Button, Header } from '@pages/SignUp/styles';
 
 const LogIn = () => {
-  const { data, error } = useSWR('/api/users', fetcher);
+  const { data, error, mutate } = useSWR('/api/users', fetcher, {
+    dedupingInterval: 100000,
+  });
 
   const [logInError, setLogInError] = useState(false);
   const [email, onChangeEmail] = useInput('');
@@ -19,12 +21,14 @@ const LogIn = () => {
       setLogInError(false);
       axios
         .post('http://localhost:3095/api/users/login', { email, password }, { withCredentials: true })
-        .then(() => {})
+        .then(() => {
+          mutate();
+        })
         .catch((error) => {
           setLogInError(error.response?.data?.statusCode === 401);
         });
     },
-    [email, password],
+    [email, password, mutate],
   );
 
   // if (data === undefined) {
