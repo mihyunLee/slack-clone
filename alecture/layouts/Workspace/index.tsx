@@ -16,11 +16,8 @@ const Workspace: React.FC<Props> = ({ children }) => {
       .post('http://localhost:3095/api/users/logout', null, {
         withCredentials: true,
       })
-      .then((response) => {
-        let newData = response.data;
-        newData = false;
-
-        mutate(newData, false);
+      .then(() => {
+        mutate(false, false);
       });
   }, []);
 
