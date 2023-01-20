@@ -35,7 +35,7 @@ const Workspace = () => {
   const { data: userData, error, mutate } = useSWR<IUser | false>('http://localhost:3095/api/users', fetcher);
 
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [showWorkspaceModal, setShowWorkspaceModal] = useState(false);
+  const [showCreateWorkspaceModal, setShowCreateWorkspaceModal] = useState(false);
   const [newWorkspace, onChangeNewWorkspace, setNewWorkspace] = useInput('');
   const [newUrl, onChangeNewUrl, setNewUrl] = useInput('');
 
@@ -59,7 +59,7 @@ const Workspace = () => {
   }, []);
 
   const onClickCreateWorkspace = useCallback(() => {
-    setShowWorkspaceModal((prev) => !prev);
+    setShowCreateWorkspaceModal((prev) => !prev);
   }, []);
 
   const onCreateWorkspace = useCallback(
@@ -81,7 +81,7 @@ const Workspace = () => {
         )
         .then(() => {
           mutate();
-          setShowWorkspaceModal(false);
+          setShowCreateWorkspaceModal(false);
           setNewWorkspace('');
           setNewUrl('');
         })
@@ -94,7 +94,7 @@ const Workspace = () => {
   );
 
   const onCloseModal = useCallback(() => {
-    setShowWorkspaceModal(false);
+    setShowCreateWorkspaceModal(false);
   }, []);
 
   if (!userData) {
@@ -144,7 +144,7 @@ const Workspace = () => {
           </Routes>
         </Chats>
       </WorkspaceWrapper>
-      <Modal show={showWorkspaceModal} onCloseModal={onCloseModal}>
+      <Modal show={showCreateWorkspaceModal} onCloseModal={onCloseModal}>
         <form onSubmit={onCreateWorkspace}>
           <Label id="workspace-name">
             <span>워크스페이스 이름</span>
