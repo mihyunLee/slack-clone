@@ -43,6 +43,11 @@ const Workspace = () => {
     setShowUserMenu((prev) => !prev);
   }, []);
 
+  const onCloseUserProfile = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowUserMenu(false);
+  }, []);
+
   if (!userData) {
     return <Navigate to="/login" />;
   }
@@ -54,7 +59,7 @@ const Workspace = () => {
           <span onClick={onClickUserProfile}>
             <ProfileImg src={gravatar.url(userData.email, { s: '28px', d: 'retro' })} alt={userData.email} />
             {showUserMenu && (
-              <Menu style={{ right: 0, top: 38 }} show={showUserMenu} onCloseModal={onClickUserProfile}>
+              <Menu style={{ right: 0, top: 38 }} show={showUserMenu} onCloseModal={onCloseUserProfile}>
                 <ProfileModal>
                   <img src={gravatar.url(userData.email, { s: '36px', d: 'retro' })} alt={userData.email} />
                   <div>
