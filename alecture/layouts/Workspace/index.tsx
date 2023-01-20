@@ -26,6 +26,7 @@ import { IUser } from '@typings/db';
 import Modal from '@components/Modal';
 import { Button, Input, Label } from '@pages/SignUp/styles';
 import useInput from '@hooks/useInput';
+import { toast } from 'react-toastify';
 
 const Channel = loadable(() => import('@pages/Channel'));
 const DirectMessage = loadable(() => import('@pages/DirectMessage'));
@@ -86,6 +87,7 @@ const Workspace = () => {
         })
         .catch((error) => {
           console.dir(error);
+          toast.error(error.response?.data, { position: 'bottom-center' });
         });
     },
     [newWorkspace, newUrl],
