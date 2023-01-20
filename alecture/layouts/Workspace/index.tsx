@@ -107,18 +107,16 @@ const Workspace = () => {
         <RightMenu>
           <span onClick={onClickUserProfile}>
             <ProfileImg src={gravatar.url(userData.email, { s: '28px', d: 'retro' })} alt={userData.email} />
-            {showUserMenu && (
-              <Menu style={{ right: 0, top: 38 }} show={showUserMenu} onCloseModal={onCloseUserProfile}>
-                <ProfileModal>
-                  <img src={gravatar.url(userData.email, { s: '36px', d: 'retro' })} alt={userData.email} />
-                  <div>
-                    <span id="profile-name">{userData.nickname}</span>
-                    <span id="profile-active">Active</span>
-                  </div>
-                </ProfileModal>
-                <LogOutButton onClick={onLogout}>로그아웃</LogOutButton>
-              </Menu>
-            )}
+            <Menu style={{ right: 0, top: 38 }} show={showUserMenu} onCloseModal={onCloseUserProfile}>
+              <ProfileModal>
+                <img src={gravatar.url(userData.email, { s: '36px', d: 'retro' })} alt={userData.email} />
+                <div>
+                  <span id="profile-name">{userData.nickname}</span>
+                  <span id="profile-active">Active</span>
+                </div>
+              </ProfileModal>
+              <LogOutButton onClick={onLogout}>로그아웃</LogOutButton>
+            </Menu>
           </span>
         </RightMenu>
       </Header>
