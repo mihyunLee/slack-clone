@@ -19,12 +19,13 @@ import {
 } from './styles';
 import loadable from '@loadable/component';
 import Menu from '@components/Menu';
+import { IUser } from '@typings/db';
 
 const Channel = loadable(() => import('@pages/Channel'));
 const DirectMessage = loadable(() => import('@pages/DirectMessage'));
 
 const Workspace = () => {
-  const { data, error, mutate } = useSWR('http://localhost:3095/api/users', fetcher);
+  const { data: userData, error, mutate } = useSWR<IUser | false>('http://localhost:3095/api/users', fetcher);
 
   const [showUserMenu, setShowUserMenu] = useState(false);
 
@@ -42,7 +43,7 @@ const Workspace = () => {
     setShowUserMenu((prev) => !prev);
   }, []);
 
-  if (!data) {
+  if (!userData) {
     return <Navigate to="/login" />;
   }
 
@@ -51,13 +52,13 @@ const Workspace = () => {
       <Header>
         <RightMenu>
           <span onClick={onClickUserProfile}>
-            <ProfileImg src={gravatar.url(data.email, { s: '28px', d: 'retro' })} alt={data.email} />
+            <ProfileImg src={gravatar.url(userData.email, { s: '28px', d: 'retro' })} alt={userData.email} />
             {showUserMenu && (
               <Menu style={{ right: 0, top: 38 }} show={showUserMenu} onCloseModal={onClickUserProfile}>
                 <ProfileModal>
-                  <img src={gravatar.url(data.email, { s: '36px', d: 'retro' })} alt={data.email} />
+                  <img src={gravatar.url(userData.email, { s: '36px', d: 'retro' })} alt={userData.email} />
                   <div>
-                    <span id="profile-name">{data.nickname}</span>
+                    <span id="profile-name">{userData.nickname}</span>
                     <span id="profile-active">Active</span>
                   </div>
                 </ProfileModal>
