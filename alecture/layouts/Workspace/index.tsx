@@ -5,6 +5,7 @@ import fetcher from '@utils/fetcher';
 import gravatar from 'gravatar';
 import { Navigate, Route, Routes } from 'react-router';
 import {
+  AddButton,
   Channels,
   Chats,
   Header,
@@ -13,13 +14,18 @@ import {
   ProfileImg,
   ProfileModal,
   RightMenu,
+  WorkspaceButton,
   WorkspaceName,
   Workspaces,
   WorkspaceWrapper,
 } from './styles';
 import loadable from '@loadable/component';
 import Menu from '@components/Menu';
+import { Link } from 'react-router-dom';
 import { IUser } from '@typings/db';
+import Modal from '@components/Modal';
+import { Button, Input, Label } from '@pages/SignUp/styles';
+import useInput from '@hooks/useInput';
 
 const Channel = loadable(() => import('@pages/Channel'));
 const DirectMessage = loadable(() => import('@pages/DirectMessage'));
@@ -28,6 +34,9 @@ const Workspace = () => {
   const { data: userData, error, mutate } = useSWR<IUser | false>('http://localhost:3095/api/users', fetcher);
 
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showWorkspaceModal, setShowWorkspaceModal] = useState(false);
+  const [newWorkspace, onChangeNewWorkspace, setNewWorkspace] = useInput('');
+  const [newUrl, onChangeNewUrl, setNewUrl] = useInput('');
 
   const onLogout = useCallback(() => {
     axios
@@ -46,6 +55,44 @@ const Workspace = () => {
   const onCloseUserProfile = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     setShowUserMenu(false);
+  }, []);
+
+  const onClickCreateWorkspace = useCallback(() => {
+    setShowWorkspaceModal((prev) => !prev);
+  }, []);
+
+  const onCreateWorkspace = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+
+      // 필수 값이 들어있는지 검사
+      if (!newWorkspace || !newWorkspace.trim()) return;
+      if (!newUrl || !newUrl.trim()) return;
+
+      axios
+        .post(
+          'http://localhost:3095/api/workspaces',
+          {
+            workspace: newWorkspace,
+            url: newUrl,
+          },
+          { withCredentials: true },
+        )
+        .then(() => {
+          mutate();
+          setShowWorkspaceModal(false);
+          setNewWorkspace('');
+          setNewUrl('');
+        })
+        .catch((error) => {
+          console.dir(error);
+        });
+    },
+    [newWorkspace, newUrl],
+  );
+
+  const onCloseModal = useCallback(() => {
+    setShowWorkspaceModal(false);
   }, []);
 
   if (!userData) {
@@ -74,7 +121,16 @@ const Workspace = () => {
         </RightMenu>
       </Header>
       <WorkspaceWrapper>
-        <Workspaces>test</Workspaces>
+        <Workspaces>
+          {userData?.Workspaces.map((ws) => {
+            return (
+              <Link key={ws.id} to={`${ws.url}/channel/일반`}>
+                <WorkspaceButton>{ws.name.slice(0, 1).toUpperCase()}</WorkspaceButton>
+              </Link>
+            );
+          })}
+          <AddButton onClick={onClickCreateWorkspace}>+</AddButton>;
+        </Workspaces>
         <Channels>
           <WorkspaceName>Sleact</WorkspaceName>
           <MenuScroll>menu scroll</MenuScroll>
@@ -86,6 +142,19 @@ const Workspace = () => {
           </Routes>
         </Chats>
       </WorkspaceWrapper>
+      <Modal show={showWorkspaceModal} onCloseModal={onCloseModal}>
+        <form onSubmit={onCreateWorkspace}>
+          <Label id="workspace-name">
+            <span>워크스페이스 이름</span>
+            <Input id="workspace" value={newWorkspace} onChange={onChangeNewWorkspace} />
+          </Label>
+          <Label id="workspace-label">
+            <span>워크스페이스 url</span>
+            <Input id="workspace" value={newUrl} onChange={onChangeNewUrl} />
+          </Label>
+          <Button type="submit">생성하기</Button>
+        </form>
+      </Modal>
     </div>
   );
 };
