@@ -4,7 +4,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 
 const Login = loadable(() => import('@pages/Login'));
 const SignUp = loadable(() => import('@pages/SignUp'));
-const Channel = loadable(() => import('@pages/Channel'));
+const Workspace = loadable(() => import('@layouts/Workspace'));
 
 const App = () => {
   return (
@@ -12,7 +12,7 @@ const App = () => {
       <Route path="/" element={<Navigate to="/login" />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
-      <Route path="/workspace/channel" element={<Channel />} />
+      <Route path="/workspace/*" element={<Workspace />} />
     </Routes>
   );
 };
