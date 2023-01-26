@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import useSWR from 'swr';
 import axios from 'axios';
 import fetcher from '@utils/fetcher';
@@ -23,25 +23,31 @@ import {
 import loadable from '@loadable/component';
 import Menu from '@components/Menu';
 import { Link } from 'react-router-dom';
-import { IUser } from '@typings/db';
+import { IChannel, IUser } from '@typings/db';
 import Modal from '@components/Modal';
 import { Button, Input, Label } from '@pages/SignUp/styles';
 import useInput from '@hooks/useInput';
 import { toast } from 'react-toastify';
 import CreateChannelModal from '@components/CreateChannelModal';
+import { useParams } from 'react-router';
 
 const Channel = loadable(() => import('@pages/Channel'));
 const DirectMessage = loadable(() => import('@pages/DirectMessage'));
 
 const Workspace = () => {
-  const { data: userData, error, mutate } = useSWR<IUser | false>('http://localhost:3095/api/users', fetcher);
-
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showCreateWorkspaceModal, setShowCreateWorkspaceModal] = useState(false);
   const [showWorkspaceModal, setShowWorkspaceModal] = useState(false);
   const [showCreateChannelModal, setShowCreateChannelModal] = useState(false);
   const [newWorkspace, onChangeNewWorkspace, setNewWorkspace] = useInput('');
   const [newUrl, onChangeNewUrl, setNewUrl] = useInput('');
+
+  const { workspace } = useParams<{ workspace?: string }>();
+  const { data: userData, error, mutate } = useSWR<IUser | false>('http://localhost:3095/api/users', fetcher);
+  const { data: channelData } = useSWR<IChannel[]>(
+    userData ? `http://localhost:3095/api/workspaces/${workspace}/channels` : null,
+    fetcher,
+  );
 
   const onLogout = useCallback(() => {
     axios
@@ -135,9 +141,9 @@ const Workspace = () => {
       </Header>
       <WorkspaceWrapper>
         <Workspaces>
-          {userData?.Workspaces.map((ws) => {
+          {userData?.Workspaces?.map((ws) => {
             return (
-              <Link key={ws.id} to={`${ws.url}/channel/일반`}>
+              <Link key={ws.id} to={`/workspace/${ws.url}/channel/일반`}>
                 <WorkspaceButton>{ws.name.slice(0, 1).toUpperCase()}</WorkspaceButton>
               </Link>
             );
@@ -154,12 +160,15 @@ const Workspace = () => {
                 <button onClick={onLogout}>로그아웃</button>
               </WorkspaceModal>
             </Menu>
+            {channelData?.map((v) => (
+              <div key={v.id}>{v.name}</div>
+            ))}
           </MenuScroll>
         </Channels>
         <Chats>
           <Routes>
-            <Route path="/channel" element={<Channel />} />
-            <Route path="/dm" element={<DirectMessage />} />
+            <Route path="/:workspace/channel/:channel" element={<Channel />} />
+            <Route path="/:workspace/dm/:id" element={<DirectMessage />} />
           </Routes>
         </Chats>
       </WorkspaceWrapper>
@@ -176,7 +185,11 @@ const Workspace = () => {
           <Button type="submit">생성하기</Button>
         </form>
       </Modal>
-      <CreateChannelModal show={showCreateChannelModal} onCloseModal={onCloseModal} />
+      <CreateChannelModal
+        show={showCreateChannelModal}
+        onCloseModal={onCloseModal}
+        setShowCreateChannelModal={setShowCreateChannelModal}
+      />
     </div>
   );
 };
