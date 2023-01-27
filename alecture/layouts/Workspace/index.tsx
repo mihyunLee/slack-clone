@@ -93,8 +93,8 @@ const Workspace = () => {
           },
           { withCredentials: true },
         )
-        .then(() => {
-          mutate();
+        .then((response) => {
+          mutate(response.data, false);
           setShowCreateWorkspaceModal(false);
           setNewWorkspace('');
           setNewUrl('');

@@ -37,9 +37,9 @@ const CreateChannelModal: React.FC<Props> = ({ show, onCloseModal, setShowCreate
           },
           { withCredentials: true },
         )
-        .then(() => {
+        .then((respone) => {
           setShowCreateChannelModal(false);
-          mutateChannel();
+          mutateChannel(respone.data, false);
           setNewChannel('');
         })
         .catch((error) => {

@@ -33,8 +33,8 @@ const InviteChannelModal: FC<Props> = ({ show, onCloseModal, setShowInviteChanne
         .post(`http://localhost:3095/api/workspaces/${workspace}/channels/${channel}/members`, {
           email: newMember,
         })
-        .then(() => {
-          mutateMembers();
+        .then((response) => {
+          mutateMembers(response.data, false);
           setShowInviteChannelModal(false);
           setNewMember('');
         })
