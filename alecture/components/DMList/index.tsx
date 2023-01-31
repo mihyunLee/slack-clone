@@ -2,12 +2,12 @@
 import { IDM, IUser, IUserWithOnline } from '@typings/db';
 import { CollapseButton } from '@components/DMList/styles';
 import fetcher from '@utils/fetcher';
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import useSWR from 'swr';
 
-const DMList: FC = () => {
+const DMList = () => {
   const { workspace } = useParams<{ workspace?: string }>();
   const {
     data: userData,

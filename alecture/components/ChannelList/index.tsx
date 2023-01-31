@@ -2,12 +2,12 @@
 import { CollapseButton } from '@components/DMList/styles';
 import { IChannel, IChat, IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import useSWR from 'swr';
 
-const ChannelList: FC = () => {
+const ChannelList = () => {
   const { workspace } = useParams<{ workspace?: string }>();
   const location = useLocation();
   // const [socket] = useSocket(workspace);
