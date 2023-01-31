@@ -181,8 +181,8 @@ const Workspace = () => {
         </Channels>
         <Chats>
           <Routes>
-            <Route path="/:workspace/channel/:channel" element={<Channel />} />
-            <Route path="/:workspace/dm/:id" element={<DirectMessage />} />
+            <Route path="/channel/:channel" element={<Channel />} />
+            <Route path="/dm/:id" element={<DirectMessage />} />
           </Routes>
         </Chats>
       </WorkspaceWrapper>
