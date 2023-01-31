@@ -2,25 +2,41 @@ import React, { useCallback } from 'react';
 import gravatar from 'gravatar';
 import useSWR from 'swr';
 import { Container, Header } from './styles';
-import { IUser } from '@typings/db';
+import { IDM, IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import { useParams } from 'react-router';
 import ChatBox from '@components/ChatBox';
 import ChatList from '@components/ChatList';
 import useInput from '@hooks/useInput';
+import axios from 'axios';
 
 const DirectMessage = () => {
   const { workspace, id } = useParams<{ workspace: string; id: string }>();
 
   const { data: userData, error, mutate } = useSWR<IUser | false>(`/api/workspaces/${workspace}/users/${id}`, fetcher);
-  const { data: myData } = useSWR('/api/users', fetcher);
+  const { data: myData } = useSWR<IUser | false>('/api/users', fetcher);
+  const { data: chatData, mutate: mutateChat } = useSWR<IDM[]>(
+    `/api/workspaces/${workspace}/dms/${id}/chats?perPage=20&page=1`,
+    fetcher,
+  );
 
   const [chat, onChangeChat, setChat] = useInput('');
 
-  const onSubmitForm = useCallback((e: React.FormEvent) => {
-    e.preventDefault();
-    setChat('');
-  }, []);
+  const onSubmitForm = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      if (chat?.trim()) {
+        axios
+          .post(`/api/workspaces/${workspace}/dms/${id}/chats`, { content: chat })
+          .then(() => {
+            mutate(false);
+            setChat('');
+          })
+          .catch(console.error);
+      }
+    },
+    [chat],
+  );
 
   if (!userData || !myData) {
     return null;
