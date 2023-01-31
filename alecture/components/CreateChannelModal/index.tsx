@@ -20,9 +20,9 @@ const CreateChannelModal: React.FC<Props> = ({ show, onCloseModal, setShowCreate
 
   let { workspace } = useParams<{ workspace?: string }>();
 
-  const { data: userData, error, mutate } = useSWR<IUser | false>('http://localhost:3095/api/users', fetcher);
+  const { data: userData, error, mutate } = useSWR<IUser | false>('/api/users', fetcher);
   const { mutate: mutateChannel } = useSWR<IChannel[]>(
-    userData ? `http://localhost:3095/api/workspaces/${workspace}/channels` : null,
+    userData ? `/api/workspaces/${workspace}/channels` : null,
     fetcher,
   );
 
@@ -31,7 +31,7 @@ const CreateChannelModal: React.FC<Props> = ({ show, onCloseModal, setShowCreate
       e.preventDefault();
       axios
         .post(
-          `http://localhost:3095/api/workspaces/${workspace}/channels`,
+          `/api/workspaces/${workspace}/channels`,
           {
             name: newChannel,
           },

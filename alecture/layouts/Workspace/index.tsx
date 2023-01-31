@@ -47,15 +47,12 @@ const Workspace = () => {
   const [newUrl, onChangeNewUrl, setNewUrl] = useInput('');
 
   const { workspace } = useParams<{ workspace?: string }>();
-  const { data: userData, error, mutate } = useSWR<IUser | false>('http://localhost:3095/api/users', fetcher);
-  const { data: channelData } = useSWR<IChannel[]>(
-    userData ? `http://localhost:3095/api/workspaces/${workspace}/channels` : null,
-    fetcher,
-  );
+  const { data: userData, error, mutate } = useSWR<IUser | false>('/api/users', fetcher);
+  const { data: channelData } = useSWR<IChannel[]>(userData ? `/api/workspaces/${workspace}/channels` : null, fetcher);
 
   const onLogout = useCallback(() => {
     axios
-      .post('http://localhost:3095/api/users/logout', null, {
+      .post('/api/users/logout', null, {
         withCredentials: true,
       })
       .then(() => {
@@ -86,7 +83,7 @@ const Workspace = () => {
 
       axios
         .post(
-          'http://localhost:3095/api/workspaces',
+          '/api/workspaces',
           {
             workspace: newWorkspace,
             url: newUrl,
