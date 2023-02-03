@@ -13,7 +13,7 @@ import axios from 'axios';
 const DirectMessage = () => {
   const { workspace, id } = useParams<{ workspace: string; id: string }>();
 
-  const { data: userData, error, mutate } = useSWR<IUser | false>(`/api/workspaces/${workspace}/users/${id}`, fetcher);
+  const { data: userData } = useSWR<IUser | false>(`/api/workspaces/${workspace}/users/${id}`, fetcher);
   const { data: myData } = useSWR<IUser | false>('/api/users', fetcher);
   const { data: chatData, mutate: mutateChat } = useSWR<IDM[]>(
     `/api/workspaces/${workspace}/dms/${id}/chats?perPage=20&page=1`,
@@ -29,7 +29,7 @@ const DirectMessage = () => {
         axios
           .post(`/api/workspaces/${workspace}/dms/${id}/chats`, { content: chat })
           .then(() => {
-            mutate(false);
+            mutateChat();
             setChat('');
           })
           .catch(console.error);
