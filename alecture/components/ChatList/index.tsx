@@ -1,14 +1,14 @@
 import React, { useCallback, useRef } from 'react';
 import Chat from '@components/Chat';
 import { IDM } from '@typings/db';
-import { ChatZone } from './styles';
+import { ChatZone, Section, StickyHeader } from './styles';
 import Scrollbars from 'react-custom-scrollbars';
 
 interface Props {
-  chatData?: IDM[];
+  chatSections: { [key: string]: IDM[] };
 }
 
-const ChatList: React.FC<Props> = ({ chatData }) => {
+const ChatList: React.FC<Props> = ({ chatSections }) => {
   const scrollRef = useRef(null);
 
   const onScroll = useCallback(() => {
@@ -18,9 +18,18 @@ const ChatList: React.FC<Props> = ({ chatData }) => {
   return (
     <ChatZone>
       <Scrollbars autoHide ref={scrollRef} onScrollFrame={onScroll}>
-        {chatData?.map((chat) => (
-          <Chat key={chat.id} data={chat} />
-        ))}
+        {Object.entries(chatSections).map(([date, chats]) => {
+          return (
+            <Section className={`section-${date}`} key={date}>
+              <StickyHeader>
+                <button>{date}</button>
+              </StickyHeader>
+              {chats.map((chat) => (
+                <Chat key={chat.id} data={chat} />
+              ))}
+            </Section>
+          );
+        })}
       </Scrollbars>
     </ChatZone>
   );
