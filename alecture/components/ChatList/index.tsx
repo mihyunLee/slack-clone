@@ -11,18 +11,23 @@ interface Props {
   isReachingEnd: boolean;
 }
 
-const ChatList = forwardRef<Scrollbars, Props>(({ chatSections, setSize, isEmpty, isReachingEnd }, ref) => {
-  const onScroll = useCallback((values: { scrollTop: number }) => {
+const ChatList = forwardRef<Scrollbars, Props>(({ chatSections, setSize, isEmpty, isReachingEnd }, scrollRef) => {
+  const onScroll = useCallback((values: { scrollTop: number; scrollHeight: number }) => {
     if (values.scrollTop === 0 && !isReachingEnd) {
       // 스크롤이 가장 위로 올라갔을 때
       // 페이지를 하나 더 불러온다.
-      setSize((prevSize) => prevSize + 1).then(() => {});
+      setSize((prevSize) => prevSize + 1).then(() => {
+        const current = (scrollRef as React.MutableRefObject<Scrollbars>)?.current;
+        if (current) {
+          current.scrollTop(current.getScrollHeight() - values.scrollHeight);
+        }
+      });
     }
   }, []);
 
   return (
     <ChatZone>
-      <Scrollbars autoHide ref={ref} onScrollFrame={onScroll}>
+      <Scrollbars autoHide ref={scrollRef} onScrollFrame={onScroll}>
         {Object.entries(chatSections).map(([date, chats]) => {
           return (
             <Section className={`section-${date}`} key={date}>
